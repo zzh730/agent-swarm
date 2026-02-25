@@ -1,0 +1,102 @@
+# Agent Swarm Configuration
+# 复制到你的 repo 根目录下 .clawdbot/agent-config.yaml
+
+# ── 项目基本信息 ──
+project:
+  name: "your-project"
+  repo: "your-org/your-repo"
+  default_branch: "main"
+  install_cmd: "pnpm install"          # npm install / pip install / etc.
+  build_cmd: "pnpm build"
+  test_cmd: "pnpm test"
+  worktree_dir: "../worktrees"         # worktree 存放位置 (repo 同级)
+
+# ── Agent 配置 ──
+agents:
+  codex:
+    command: "codex"
+    model: "gpt-5.3-codex"             # 按需更换模型
+    flags: >-
+      --dangerously-bypass-approvals-and-sandbox
+      -c "model_reasoning_effort=high"
+    best_for:
+      - "backend-logic"
+      - "complex-bugs"
+      - "multi-file-refactor"
+      - "database"
+
+  claude_code:
+    command: "claude"
+    model: "claude-opus-4.5"            # 按需更换模型
+    flags: "--dangerously-skip-permissions"
+    best_for:
+      - "frontend"
+      - "ui-implementation"
+      - "git-operations"
+      - "documentation"
+      - "scripts"
+
+  gemini:
+    command: "gemini"                    # 如果你有 Gemini CLI
+    model: "gemini-2.5-pro"
+    best_for:
+      - "ui-design"
+      - "html-css-spec"
+
+# ── Agent 路由规则 ──
+# Orchestrator 用这个来自动选择 agent
+routing:
+  default_agent: "codex"
+  rules:
+    - match: ["frontend", "ui", "css", "component", "page", "style"]
+      agent: "claude_code"
+    - match: ["design", "mockup", "layout", "beautiful"]
+      agent: "gemini"
+    - match: ["backend", "api", "database", "migration", "auth", "billing"]
+      agent: "codex"
+    - match: ["docs", "readme", "changelog"]
+      agent: "claude_code"
+    - match: ["refactor", "optimize", "performance"]
+      agent: "codex"
+
+# ── 监控配置 ──
+monitoring:
+  cron_interval: "*/10 * * * *"         # 每 10 分钟检查一次
+  max_retries: 3                        # 失败最多重试次数
+  max_concurrent_agents: 5              # 并发 agent 上限 (根据 RAM 调整)
+
+# ── 通知配置 ──
+notifications:
+  # 选一个即可
+  telegram:
+    enabled: false
+    bot_token: "${TELEGRAM_BOT_TOKEN}"
+    chat_id: "${TELEGRAM_CHAT_ID}"
+  slack:
+    enabled: false
+    webhook_url: "${SLACK_WEBHOOK_URL}"
+  stdout:
+    enabled: true                       # 默认：输出到终端
+
+# ── CI/Review 配置 ──
+review:
+  # 三模型交叉 review
+  codex_review: true
+  gemini_review: true                   # Gemini Code Assist (免费)
+  claude_review: true
+  # UI 变更必须包含截图
+  require_screenshots_for_ui: true
+
+# ── "Done" 的定义 ──
+# Agent prompt 中会包含这个 checklist
+definition_of_done:
+  - "PR created"
+  - "Branch synced to main (no merge conflicts)"
+  - "CI passing (lint, types, unit tests, E2E)"
+  - "Screenshots included (if UI changes)"
+
+# ── Prompt 模板目录 ──
+prompt_templates_dir: ".clawdbot/prompt-templates"
+
+# ── 学习记录 ──
+learnings_file: ".clawdbot/learnings.jsonl"
