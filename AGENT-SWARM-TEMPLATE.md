@@ -9,7 +9,7 @@
 │              YOU (Human)                     │
 │   决策 · 审批 · 方向把控                       │
 └──────────────────┬──────────────────────────┘
-                   │ Telegram / Slack 通知
+                   │ Telegram / Slack / Discord 通知
 ┌──────────────────▼──────────────────────────┐
 │         ORCHESTRATOR (Zoe 层)                │
 │                                              │
@@ -73,8 +73,10 @@ brew install gh tmux jq
 npm install -g @anthropic-ai/claude-code
 npm install -g @openai/codex
 
-# 可选：通知
-pip install python-telegram-bot  # 或用 Slack webhook
+# 可选：通知 (使用 webhook / bot token，无额外 Python 依赖)
+# TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID
+# SLACK_WEBHOOK_URL
+# DISCORD_WEBHOOK_URL 或 DISCORD_BOT_TOKEN + DISCORD_CHANNEL_ID
 ```
 
 ### 3. 配置

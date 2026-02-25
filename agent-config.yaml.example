@@ -67,7 +67,7 @@ monitoring:
 
 # ── 通知配置 ──
 notifications:
-  # 选一个即可
+  # 可同时配置多个通道
   telegram:
     enabled: false
     bot_token: "${TELEGRAM_BOT_TOKEN}"
@@ -75,6 +75,11 @@ notifications:
   slack:
     enabled: false
     webhook_url: "${SLACK_WEBHOOK_URL}"
+  discord:
+    enabled: false
+    webhook_url: "${DISCORD_WEBHOOK_URL}"
+    bot_token: "${DISCORD_BOT_TOKEN}"      # 可选：Discord Bot API
+    channel_id: "${DISCORD_CHANNEL_ID}"    # 可选：Discord Bot API
   stdout:
     enabled: true                       # 默认：输出到终端
 
